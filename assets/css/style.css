@@ -1,0 +1,43 @@
+.panel {
+    background-color: #0099ff;
+    color: white;
+    height: 80px;
+    text-align: center;
+}
+
+.container-fluid {
+    width: 80%;
+    height: 500px;
+    background: url(../images/lion_king.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+#drag {
+
+    padding: 100px;
+}
+
+.col-md-12,
+.col-md-4 {
+    margin-bottom: 20px;
+    border-style: solid;
+    border-width: 2px;
+    background-color: white;
+    color: black;
+    opacity: 0.45;
+}
+
+.col-md-12 {
+    text-align: center;
+}
+
+.col-md-6 {
+    margin-bottom: 20px;
+}
+
+#cloud-type {}
+
+#cloud-fact {}
