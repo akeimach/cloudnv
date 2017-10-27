@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>IMGUR TEST</title>
+  <style>
+  #div1 {
+    width: 350px;
+    height: 70px;
+    padding: 10px;
+    border: 1px solid #aaaaaa;
+  }
+  </style>
+</head>
+
+<body>
+  <div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+  <div class="fileUpload">
+    <span class="custom-span">+</span>
+    <p class="custom-para">Add Images</p>
+    <input id="uploadBtn" type="file" class="upload" />
+  </div>
+  <input id="uploadFile" placeholder="0 files selected" disabled="disabled" />
+  <script>
+  function allowDrop(ev) {
+    ev.preventDefault();
+  }
+
+  function drag(ev) {
+    ev.dataTransfer.setData("file", ev.target.id);
+  }
+
+  function drop(ev) {
+    ev.preventDefault();
+    console.log(this.value);
+    var data = ev.dataTransfer.getData("file");
+  }
+
+  document.getElementById("uploadBtn").onchange  =   function (event)  {
+    document.getElementById("uploadFile").value  =  this.value;
+    console.log(event);
+    console.log(this.value);
+  };
+  </script>
+</body>
+
+</html>
