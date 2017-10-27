@@ -8,23 +8,24 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
-
 <body>
     <div class="panel">
         <h1>CloudNV</h1>
     </div>
     <div class="container-fluid">
         <div class="row">
-            <div id="drag" class="col-md-12"><b>Image Box Drop Thingie</b></div>
+                <div id="drag" class="col-md-12"><b>Image Box Drop Thingie</b>
+                </div>
+            </input>
             <!-- assumption: on drag auto upload on click open file upload -->
         </div>
         <div class="row">
             <form class="col-md-6 col-md-offset-4">
                 <b>Enter Image URL</b>
-                <input type="text" name="Image-URL">
-                <input type="submit" value="Submit">
+                <input type="text" name="Image-URL" id="image-url">
+                <input type="submit" value="Submit" id="submit">
                 <br>
-                <label for="uploadBtn" class="custom-para">Upload Image</label>
+                <label for="uploadBtn" class="custom-para">Upload Image</label
                 <input id="uploadBtn" name="uploadBtn" type="file" class="upload">
             </form>
             
@@ -45,9 +46,9 @@
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="assets/javascript/keys.js "></script>
-    <script type="text/javascript" src="assets/javascript/app.js "></script>
-    <script type="text/javascript " src="assets/javascript/imgur.js "></script>
+    <script type="text/javascript" src="assets/javascript/keys.js"></script>
+    <script type="text/javascript" src="assets/javascript/app.js"></script>
+    <script type="text/javascript" src="assets/javascript/imgur.js"></script>
 </body>
 
 </html>
