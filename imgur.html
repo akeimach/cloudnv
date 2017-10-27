@@ -4,18 +4,22 @@
 <head>
   <title>IMGUR TEST</title>
   <style>
-  #div1 {
-    width: 350px;
-    height: 70px;
-    padding: 10px;
-    border: 1px solid #aaaaaa;
+  #dragandrophandler {
+    border: 2px dotted #0B85A1;
+    width: 400px;
+    color: #92AAB0;
+    text-align: left;
+    vertical-align: middle;
+    padding: 10px 10px 10 10px;
+    margin-bottom: 10px;
+    font-size: 200%;
   }
   </style>
 </head>
 
 <body>
-  <div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-  <div class="fileUpload">
+  <div id="dragandrophandler">Drag & Drop Files Here</div>
+  <div id="dragandrophandler" >
     <span class="custom-span">+</span>
     <p class="custom-para">Add Images</p>
     <input id="uploadBtn" type="file" class="upload" />
@@ -41,11 +45,31 @@
     var data = ev.dataTransfer.getData("file");
   }
 
-  document.getElementById("uploadBtn").onchange  =   function (event)  {
-    document.getElementById("uploadFile").value  =  this.value;
-    console.log(event);
-    console.log(this.value);
-    var file = this.files[0];
+  var obj = $("#dragandrophandler");
+  obj.on('dragenter', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    $(this).css('border', '2px solid #0B85A1');
+  });
+  obj.on('dragover', function(e) {
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  obj.on('drop', function(e) {
+
+    $(this).css('border', '2px dotted #0B85A1');
+    e.preventDefault();
+    var files = e.originalEvent.dataTransfer.files;
+
+    //We need to send dropped files to Server
+    console.log(files);
+    for (var i = 0; i < files.length; i++){
+      readFile(files[i]);
+    }
+  });
+
+  function readFile(file){
+    console.log(file);
     var reader = new FileReader();
     reader.onloadend = function() {
       $("#displayImage").attr("src", reader.result);
@@ -73,6 +97,14 @@
       });
     }
     reader.readAsDataURL(file);
+  }
+
+  document.getElementById("uploadBtn").onchange  =   function (event)  {
+    document.getElementById("uploadFile").value  =  this.value;
+    console.log(event);
+    console.log(this.value);
+    var file = this.files[0];
+    readFile(file);
 
   };
   </script>
