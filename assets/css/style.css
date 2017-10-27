@@ -41,3 +41,26 @@
 #cloud-type {}
 
 #cloud-fact {}
+
+.upload {
+    margin-right: 0;
+    margin-left: 10px;
+}
+
+#uploadBtn {
+    margin-right: 0;
+    margin-bottom: 10px;
+    border-bottom: 50px;
+    float: left;
+    padding-top: 20px;
+}
+
+label {
+    margin-top: 20px;
+    float: left;
+    margin-left: 20px;
+}
+
+b {
+    margin-right: 5px;
+}
