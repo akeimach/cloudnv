@@ -21,7 +21,12 @@
     <input id="uploadBtn" type="file" class="upload" />
   </div>
   <input id="uploadFile" placeholder="0 files selected" disabled="disabled" />
+  <br>
+  <img id="displayImage" src="">
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script>
+  var imgur_client_id = "cffdbdcf9cb88c7";
+
   function allowDrop(ev) {
     ev.preventDefault();
   }
@@ -40,6 +45,35 @@
     document.getElementById("uploadFile").value  =  this.value;
     console.log(event);
     console.log(this.value);
+    var file = this.files[0];
+    var reader = new FileReader();
+    reader.onloadend = function() {
+      $("#displayImage").attr("src", reader.result);
+      var base64result = reader.result.split(',')[1];
+      var form = new FormData();
+      form.append("image", base64result);
+
+      var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "https://api.imgur.com/3/image",
+        "method": "POST",
+        "headers": {
+          "authorization": `Client-ID ${imgur_client_id}`
+        },
+        "processData": false,
+        "contentType": false,
+        "mimeType": "multipart/form-data",
+        "data": form
+      }
+
+      $.ajax(settings).done(function(response) {
+        var res = JSON.parse(response);
+        console.log(res.data.link);
+      });
+    }
+    reader.readAsDataURL(file);
+
   };
   </script>
 </body>

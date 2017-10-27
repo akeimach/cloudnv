@@ -14,7 +14,9 @@
     </div>
     <div class="container-fluid">
         <div class="row">
-            <div id="drag" class="col-md-12"><b>Image Box Drop Thingie</b></div>
+                <div id="drag" class="col-md-12"><b>Image Box Drop Thingie</b>
+                </div>
+            </input>
             <!-- assumption: on drag auto upload on click open file upload -->
         </div>
         <div class="row">
@@ -22,11 +24,15 @@
                 <b>Enter Image URL</b>
                 <input type="text" name="Image-URL">
                 <input type="submit" value="Submit">
+                <br>
+                <label for="uploadBtn" class="custom-para">Add Images</label>
+                <input id="uploadBtn" name="uploadBtn" type="file" class="upload">
             </form>
             
         </div>
         <div class="row">
             <div class="col-md-4 col-md-offset-1">
+                <img id="displayImage"><br>
                 <img src="">Insert Image (placeholder)
             </div>
             <div class="col-md-4 col-md-offset-2">
