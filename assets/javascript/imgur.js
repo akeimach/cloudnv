@@ -80,8 +80,10 @@ $(document).ready(function addUpload() {
 
     console.log(event);
     console.log($(this));
-    var file = this.files[0];
-    readPic(file);
+
+    for (var i = 0; i < this.files.length; i++) {
+      readPic(this.files[i]);
+    }
 
   });
 
