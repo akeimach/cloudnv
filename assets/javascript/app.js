@@ -3,14 +3,11 @@
 var response = new XMLHttpRequest;
 var imageResults = [];
 var cloudWord;
+var cloudWordArray = [];
 
 function getWikiResults() {
 
-    console.log(cloudWord);
-
-    var wikiURL = "https://en.wikipedia.org/w/api.php";
-
-    wikiURL += "?" + $.param({
+    var wikiURL = "https://en.wikipedia.org/w/api.php?" + $.param({
         "action" : "query",
         "list"   : "search",
         "srsearch" : cloudWord,
@@ -22,32 +19,24 @@ function getWikiResults() {
         url: wikiURL,
         dataType: "jsonp"
     }).done(function(result) {
-
         var resultArray = result.query.search;
-        console.log(resultArray);
-        console.log("http://en.wikipedia.org/?curid=" + resultArray[0].pageid);
-
+        console.log("wikipedia query result", resultArray);
+        console.log("top wikipedia url: http://en.wikipedia.org/?curid=" + resultArray[0].pageid);
     }).fail(function(err) {
         throw err;
     });
-
 }
 
 
 function getBestDescriptor() {
     // TODO: split word into array so two words can both be searched
-    for (var i = 0; i < imageResults.length; i++) {
-        if (specialClouds.indexOf(imageResults[i]) !== -1) {
-            cloudWord = imageResults[i];
-            return cloudWord;
-        }
-        else if (cloudSpecies.indexOf(imageResults[i]) !== -1) {
-            cloudWord = imageResults[i];
-            return cloudWord;
-        }
-        else if (cloudFamilies.indexOf(imageResults[i]) !== -1) {
-            cloudWord = imageResults[i];
-            return cloudWord;
+    for (var i = 0; i < cloudWordArray.length; i++) {
+        // if the cloud word in the array exists in the google vision results
+        if (imageResults.indexOf(cloudWordArray[i]) !== -1) {
+            // set the cloud word
+            cloudWord = cloudWordArray[i];
+            console.log("chosen word: " + cloudWord);
+            return;
         }
     }
 }
@@ -57,13 +46,18 @@ response.onload = function() {
     imageResults = [];
     var result = JSON.parse(response.responseText);
     if (result.responses[0].error) {
+        // Check if there was a response
+        // TODO: notify user there was a time-out
         console.log(result.responses[0].error);
     }
     else {
         var resultWebDetect = result.responses[0].webDetection.webEntities;
         var resultLabels = result.responses[0].labelAnnotations;
+        console.log("web detect results", resultWebDetect);
+        console.log("label detect results", resultLabels);
         for (var i = 0; i < resultWebDetect.length; i++) {
             var cloudWord = resultWebDetect[i].description;
+            // TODO: remove the word "cloud" from the description
             if (cloudWord) {
                 imageResults.push(cloudWord.toLowerCase());
             }
@@ -74,9 +68,10 @@ response.onload = function() {
                 imageResults.push(cloudWord.toLowerCase());
             }
         }
-        console.log(imageResults);
-        cloudWord = getBestDescriptor();
+        console.log("image description results", imageResults);
+        getBestDescriptor();
         if (cloudWord) {
+            // if the cloud type was found in our cloud word array
             getWikiResults();
         }
     }
@@ -84,30 +79,21 @@ response.onload = function() {
 
 
 $("#submit").on("click", function(event) {
-
     event.preventDefault();
-
-    imageUri = $("#image-url").val().trim();
-
-    // var imageUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Cirrus_clouds2.jpg/220px-Cirrus_clouds2.jpg"; //temp test image
-
+    var imageUri = $("#image-url").val().trim();
     var request = JSON.stringify(
-        {
-            "requests":[
-                {  
-                    "image":{
+        {   "requests":[
+                {   "image":{
                         "source":{      
                             "imageUri":
                                 imageUri
                         }
                     },  
                     "features":[
-                        {
-                            "type":"WEB_DETECTION",
+                        {   "type":"WEB_DETECTION",
                             "maxResults":10
                         },
-                        {
-                            "type":"LABEL_DETECTION",
+                        {   "type":"LABEL_DETECTION",
                             "maxResults":10
                         }
                     ]
@@ -115,65 +101,13 @@ $("#submit").on("click", function(event) {
             ]
         }
     );
-
     response.open("POST","https://vision.googleapis.com/v1/images:annotate?key=" + apiKey.vision, !0);
-
     response.send(request);
 });
 
 
 
-
-var cloudFamilies = [
-    "cirrus",
-    "cirrostratus",
-    "cirrocumulus",
-    "altocumulus",
-    "altostratus",
-    "stratocumulus",
-    "stratus",
-    "cumulus",
-    "cumulonimbus",
-    "nimbostratus"
-];
-
-var cloudSpecies = [
-    "calvus",
-    "capillatus",
-    "castellanus",
-    "congestus",
-    "fibratus",
-    "floccus",
-    "fractus",
-    "humilis",
-    "lenticularis",
-    "mediocris",
-    "nebulosus",
-    "spissatus",
-    "stratiformis",
-    "uncinus",
-    "duplicatus",
-    "intortus",
-    "lacunosus",
-    "opacus",
-    "perlucidus",
-    "radiatus",
-    "translucidus",
-    "undulatus",
-    "vertebratus",
-    "arcus",
-    "incus",
-    "mamma",
-    "pannus",
-    "pileus",
-    "praecipitatio",
-    "tuba",
-    "velum",
-    "virga"
-];
-
-
-var specialClouds = [
+cloudWordArray = [
     "noctilucent",
     "polar stratospheric",
     "cirriform",
@@ -277,7 +211,49 @@ var specialClouds = [
     "altocumulus lenticularis",
     "altocumulus volutus",
     "altocumulus castellanus",
-    "altocumulus floccus"
+    "altocumulus floccus",
+    "calvus",
+    "capillatus",
+    "castellanus",
+    "congestus",
+    "fibratus",
+    "floccus",
+    "fractus",
+    "humilis",
+    "lenticularis",
+    "mediocris",
+    "nebulosus",
+    "spissatus",
+    "stratiformis",
+    "uncinus",
+    "duplicatus",
+    "intortus",
+    "lacunosus",
+    "opacus",
+    "perlucidus",
+    "radiatus",
+    "translucidus",
+    "undulatus",
+    "vertebratus",
+    "arcus",
+    "incus",
+    "mamma",
+    "pannus",
+    "pileus",
+    "praecipitatio",
+    "tuba",
+    "velum",
+    "virga",
+    "cirrus",
+    "cirrostratus",
+    "cirrocumulus",
+    "altocumulus",
+    "altostratus",
+    "stratocumulus",
+    "stratus",
+    "cumulus",
+    "cumulonimbus",
+    "nimbostratus"
 ];
 
 
