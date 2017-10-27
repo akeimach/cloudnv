@@ -83,9 +83,13 @@ response.onload = function() {
 };
 
 
-$(document.body).ready(function(event) {
+$("#submit").on("click", function(event) {
 
-    var imageUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Cirrus_clouds2.jpg/220px-Cirrus_clouds2.jpg"; //temp test image
+    event.preventDefault();
+
+    imageUri = $("#image-url").val().trim();
+
+    // var imageUri = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Cirrus_clouds2.jpg/220px-Cirrus_clouds2.jpg"; //temp test image
 
     var request = JSON.stringify(
         {
