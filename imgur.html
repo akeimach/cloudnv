@@ -4,7 +4,7 @@
 <head>
   <title>IMGUR TEST</title>
   <style>
-  #dragandrophandler {
+  .dragandrophandler {
     border: 2px dotted #0B85A1;
     width: 400px;
     color: #92AAB0;
@@ -14,48 +14,61 @@
     margin-bottom: 10px;
     font-size: 200%;
   }
+
+  .inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+  }
+
+  .inputLabel {
+    font-size: 1.25em;
+    font-weight: 700;
+    color: white;
+    background-color: black;
+    display: inline-block;
+  }
+
+  .formLabel {
+    width: inherit;
+    height: inherit;
+    text-align: center;
+  }
+
+  .inputFile:focus+label,
+  .inputLabel:hover {
+    background-color: red;
+  }
   </style>
 </head>
 
 <body>
-  <div id="dragandrophandler">Drag & Drop Files Here</div>
-  <div id="dragandrophandler" >
-    <span class="custom-span">+</span>
-    <p class="custom-para">Add Images</p>
-    <input id="uploadBtn" type="file" class="upload" />
-  </div>
-  <input id="uploadFile" placeholder="0 files selected" disabled="disabled" />
-  <br>
+  <form class="dragandrophandler">
+    <input id="uploadBtn" name="uploadBtn" type="file" class="upload inputfile">
+    <label for="uploadBtn" class="inputLabel formLabel">
+      Add Images
+    </label>
+  </form>
+  <input id="uploadFile" placeholder="0 files selected" disabled="disabled">
+  <hr>
   <img id="displayImage" src="">
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script>
   var imgur_client_id = "cffdbdcf9cb88c7";
 
-  function allowDrop(ev) {
-    ev.preventDefault();
-  }
-
-  function drag(ev) {
-    ev.dataTransfer.setData("file", ev.target.id);
-  }
-
-  function drop(ev) {
-    ev.preventDefault();
-    console.log(this.value);
-    var data = ev.dataTransfer.getData("file");
-  }
-
-  var obj = $("#dragandrophandler");
-  obj.on('dragenter', function(e) {
+  $(".dragandrophandler").on('dragenter', function(e) {
     e.stopPropagation();
     e.preventDefault();
     $(this).css('border', '2px solid #0B85A1');
   });
-  obj.on('dragover', function(e) {
+  $(".dragandrophandler").on('dragover', function(e) {
     e.stopPropagation();
     e.preventDefault();
   });
-  obj.on('drop', function(e) {
+  $(".dragandrophandler").on('drop', function(e) {
 
     $(this).css('border', '2px dotted #0B85A1');
     e.preventDefault();
@@ -63,40 +76,45 @@
 
     //We need to send dropped files to Server
     console.log(files);
-    for (var i = 0; i < files.length; i++){
+    for (var i = 0; i < files.length; i++) {
       readFile(files[i]);
     }
   });
+  
+  function readFile(file) {
+    var fileType = file["type"].split("/")[0];
+    if (fileType !== "image") {
+      console.log("Not an image")
+    } else {
+      console.log(file);
+      var reader = new FileReader();
+      reader.onloadend = function() {
+        $("#displayImage").attr("src", reader.result);
+        var base64result = reader.result.split(',')[1];
+        var form = new FormData();
+        form.append("image", base64result);
 
-  function readFile(file){
-    console.log(file);
-    var reader = new FileReader();
-    reader.onloadend = function() {
-      $("#displayImage").attr("src", reader.result);
-      var base64result = reader.result.split(',')[1];
-      var form = new FormData();
-      form.append("image", base64result);
+        var settings = {
+          "async": true,
+          "crossDomain": true,
+          "url": "https://api.imgur.com/3/image",
+          "method": "POST",
+          "headers": {
+            "authorization": `Client-ID ${imgur_client_id}`
+          },
+          "processData": false,
+          "contentType": false,
+          "mimeType": "multipart/form-data",
+          "data": form
+        }
 
-      var settings = {
-        "async": true,
-        "crossDomain": true,
-        "url": "https://api.imgur.com/3/image",
-        "method": "POST",
-        "headers": {
-          "authorization": `Client-ID ${imgur_client_id}`
-        },
-        "processData": false,
-        "contentType": false,
-        "mimeType": "multipart/form-data",
-        "data": form
+        $.ajax(settings).done(function(response) {
+          var res = JSON.parse(response);
+          console.log(res.data.link);
+        });
       }
-
-      $.ajax(settings).done(function(response) {
-        var res = JSON.parse(response);
-        console.log(res.data.link);
-      });
+      reader.readAsDataURL(file);
     }
-    reader.readAsDataURL(file);
   }
 
   document.getElementById("uploadBtn").onchange  =   function (event)  {
