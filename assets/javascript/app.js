@@ -5,7 +5,7 @@ var imageResults = [];
 var cloudWord;
 var cloudWordsArray = [];
 var cloudGenusArray = [];
-
+var useBase64;
 
 function getWikiResults() {
 
@@ -86,26 +86,78 @@ response.onload = function() {
 $("#submit").on("click", function(event) {
     event.preventDefault();
     var imageUri = $("#image-url").val().trim();
-    var request = JSON.stringify(
-        {   "requests":[
-                {   "image":{
-                        "source":{      
-                            "imageUri":
-                                imageUri
-                        }
-                    },  
-                    "features":[
-                        {   "type":"WEB_DETECTION",
-                            "maxResults":10
-                        },
-                        {   "type":"LABEL_DETECTION",
-                            "maxResults":10
-                        }
-                    ]
-                } 
-            ]
-        }
-    );
+
+    var request;
+    if (useBase64) {
+        // imageType = JSON.stringify("content": "base64-encoded-data");
+        request = JSON.stringify(
+            {   "requests":[
+                    {   "image":{
+                            "content"://{      
+                                "base64-encoded-data"
+                            // }
+                        },  
+                        "features":[
+                            {   "type":"WEB_DETECTION",
+                                "maxResults":10
+                            },
+                            {   "type":"LABEL_DETECTION",
+                                "maxResults":10
+                            }
+                        ]
+                    } 
+                ]
+            }
+        );
+    }
+    else {
+        request = JSON.stringify(
+            {   "requests":[
+                    {   "image":{
+                            "source":{      
+                                "imageUri":
+                                    $("#image-url").val().trim()
+                            }
+                        },  
+                        "features":[
+                            {   "type":"WEB_DETECTION",
+                                "maxResults":10
+                            },
+                            {   "type":"LABEL_DETECTION",
+                                "maxResults":10
+                            }
+                        ]
+                    } 
+                ]
+            }
+        );
+        // imageType = JSON.stringify(
+        //     "source":{      
+        //         "imageUri": $("#image-url").val().trim();
+        //     }
+        // );
+    }
+
+    // var request = JSON.stringify(
+    //     {   "requests":[
+    //             {   "image":{
+    //                     "source":{      
+    //                         "imageUri":
+    //                             imageUri
+    //                     }
+    //                 },  
+    //                 "features":[
+    //                     {   "type":"WEB_DETECTION",
+    //                         "maxResults":10
+    //                     },
+    //                     {   "type":"LABEL_DETECTION",
+    //                         "maxResults":10
+    //                     }
+    //                 ]
+    //             } 
+    //         ]
+    //     }
+    // );
     response.open("POST","https://vision.googleapis.com/v1/images:annotate?key=" + apiKey.vision, !0);
     response.send(request);
 });
