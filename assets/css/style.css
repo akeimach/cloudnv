@@ -6,9 +6,9 @@
 }
 
 .container-fluid {
-    width: 80%;
-    height: 500px;
-    background: url(../images/lion_king.jpg) no-repeat center center fixed;
+    width: 90%;
+    height: auto;
+    background: url(../images/lion_king.jpg) no-repeat center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -16,7 +16,6 @@
 }
 
 #drag {
-
     padding: 100px;
 }
 
@@ -35,9 +34,26 @@
 }
 
 .col-md-6 {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 #cloud-type {}
 
 #cloud-fact {}
+
+.upload {
+    margin-left: 10px;
+    margin-bottom: 10px;
+    float: left;
+    padding-top: 18px;
+}
+
+label {
+    margin-top: 20px;
+    float: left;
+    margin-left: 20px;
+}
+
+b {
+    margin-right: 5px;
+}
