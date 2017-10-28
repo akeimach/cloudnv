@@ -1,18 +1,37 @@
 
 
-var response = new XMLHttpRequest;
-var imageResults = [];
-var cloudWord;
-var cloudWordsArray = [];
-var cloudGenusArray = [];
+function isURL(imageData) {
+    var urlPattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name and extension
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?'+ // port
+    '(\\/[-a-z\\d%@_.~+&:]*)*'+ // path
+    '(\\?[;&a-z\\d%@_.,~+&:=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    return urlPattern.test(imageData);
+}
 
 
-function getWikiResults() {
+
+function getCloudDescriptor(visionResults) {
+    for (var i = 0; i < cloudWordsArray.length; i++) {
+        // if the cloud word in the array exists in the google vision results
+        if (visionResults.indexOf(cloudWordsArray[i]) !== -1) {
+            // set the cloud word
+            console.log("chosen word: " + cloudWordsArray[i]);
+            return cloudWordsArray[i];
+        }
+    }
+}
+
+
+
+function queryWikiAPI(searchString) {
 
     var wikiURL = "https://en.wikipedia.org/w/api.php?" + $.param({
         "action" : "query",
         "list"   : "search",
-        "srsearch" : cloudWord + " cloud",
+        "srsearch" : searchString + " cloud",
         "srwhat" : "text",
         "format" : "json",
     });
@@ -30,88 +49,80 @@ function getWikiResults() {
 }
 
 
-function getBestDescriptor() {
-    for (var i = 0; i < cloudWordsArray.length; i++) {
-        // if the cloud word in the array exists in the google vision results
-        if (imageResults.indexOf(cloudWordsArray[i]) !== -1) {
-            // set the cloud word
-            cloudWord = cloudWordsArray[i];
-            console.log("chosen word: " + cloudWord);
-            return;
-        }
-    }
-}
 
-
-response.onload = function() {
-    imageResults = [];
-    cloudWord = "";
-    var result = JSON.parse(response.responseText);
-    if (result.responses[0].error) {
-        // Check if there was a response
-        // TODO: notify user there was a time-out
-        console.log(result.responses[0].error);
+function queryVisionAPI(imageData) {
+    // imageData is either a url or base 64 encoded string
+    var imageDataString;
+    if (isURL(imageData)) {
+        imageDataString = '"source":{"imageUri":"' + imageData + '"}';
     }
     else {
-        var resultWebDetect = result.responses[0].webDetection.webEntities;
-        var resultLabels = result.responses[0].labelAnnotations;
-        console.log("vision web detect results", resultWebDetect);
-        console.log("vision label detect results", resultLabels);
-        for (var i = 0; i < resultWebDetect.length; i++) {
-            var resultWord = resultWebDetect[i].description;
-            if (resultWord) {
-                resultWord = resultWord.toLowerCase();
-                resultWord.replace(" cloud", "");
-                imageResults.push(resultWord);
-            }
-        }
-        for (var i = 0; i < resultLabels.length; i++) {
-            var resultWord = resultLabels[i].description;
-            if (resultWord) {
-                resultWord = resultWord.toLowerCase();
-                resultWord.replace(" cloud", "");
-                imageResults.push(resultWord);
-            }
-        }
-        console.log("image description results", imageResults);
-        getBestDescriptor();
-        if (cloudWord) {
-            // if the cloud type was found in our cloud word array
-            getWikiResults();
-        }
+        imageDataString = '"content":"' + imageData + '"';
     }
+    var request = '{"requests":[{"image":{' + imageDataString + '},"features":[{"type":"WEB_DETECTION","maxResults":10},{"type":"LABEL_DETECTION","maxResults":10}]}]}';
+
+    var response = new XMLHttpRequest;
+    response.open("POST","https://vision.googleapis.com/v1/images:annotate?key=" + apiKey.vision, !0);
+    response.send(request);
+
+    response.onload = function() {
+
+        var visionResults = [];
+        var result = JSON.parse(response.responseText);
+
+        if (result.responses[0].error) {
+            // Check if there was a response
+            // TODO: notify user there was a time-out
+            console.log(result.responses[0].error);
+        }
+        else {
+            var resultWebDetect = result.responses[0].webDetection.webEntities;
+            var resultLabels = result.responses[0].labelAnnotations;
+            console.log("vision web detect results", resultWebDetect);
+            console.log("vision label detect results", resultLabels);
+            for (var i = 0; i < resultWebDetect.length; i++) {
+                var resultWord = resultWebDetect[i].description;
+                if (resultWord) {
+                    resultWord = resultWord.toLowerCase();
+                    resultWord.replace(" cloud", "");
+                    visionResults.push(resultWord);
+                }
+            }
+            for (var i = 0; i < resultLabels.length; i++) {
+                var resultWord = resultLabels[i].description;
+                if (resultWord) {
+                    resultWord = resultWord.toLowerCase();
+                    resultWord.replace(" cloud", "");
+                    visionResults.push(resultWord);
+                }
+            }
+            console.log("image description results", visionResults);
+            var searchString = getCloudDescriptor(visionResults);
+            if (searchString) {
+                // if the cloud type was found in our cloud word array
+                queryWikiAPI(searchString);
+            }
+        }
+    };
 };
+
 
 
 $("#submit").on("click", function(event) {
     event.preventDefault();
-    var imageUri = $("#image-url").val().trim();
-    var request = JSON.stringify(
-        {   "requests":[
-                {   "image":{
-                        "source":{      
-                            "imageUri":
-                                imageUri
-                        }
-                    },  
-                    "features":[
-                        {   "type":"WEB_DETECTION",
-                            "maxResults":10
-                        },
-                        {   "type":"LABEL_DETECTION",
-                            "maxResults":10
-                        }
-                    ]
-                } 
-            ]
-        }
-    );
-    response.open("POST","https://vision.googleapis.com/v1/images:annotate?key=" + apiKey.vision, !0);
-    response.send(request);
+    var imageData = $("#image-url").val().trim();
+    if (imageData !== "") {
+        $("#displayImage").attr("src", imageData);
+        $("#image-url").val("");
+        $("#image-url").attr("placeholder", imageData);
+        queryVisionAPI(imageData);
+    }
 });
 
 
-cloudWordsArray = [
+
+
+var cloudWordsArray = [
     "cumulus humilis radiatus",
     "cumulus mediocris radiatus",
     "cumulus congestus radiatus",
@@ -322,11 +333,5 @@ cloudWordsArray = [
     "cirrocumulus",
     "cirrostratus"
 ];
-
-
-
-
-
-
 
 
