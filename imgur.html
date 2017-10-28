@@ -56,8 +56,6 @@
   <hr>
   <img id="displayImage" src="">
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-  <script src="assets/javascript/keys.js" type="text/javascript"></script>
-  <script src="assets/javascript/app.js" type="text/javascript"></script>
   <script>
   var imgur_client_id = "cffdbdcf9cb88c7";
 
@@ -113,7 +111,6 @@
         $.ajax(settings).done(function(response) {
           var res = JSON.parse(response);
           console.log(res.data.link);
-          queryVisionAPI(res.data.link);
         });
       }
       reader.readAsDataURL(file);
