@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    <meta name="description" content="CloudNV takes your picture of a cloud and tells what type it is."> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
     <title>CloudNV</title>
     <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
@@ -17,13 +19,11 @@
             <div class = "col-md-12 customBox">
                 <img id="displayImage" class="imageCloud hidden">
                 <div id="drag" class="drag uploadWanted">
-                    <div class="uploadBox">
-                        <input id="uploadBtn" name="uploadBtn" type="file" class="upload">
-                        <label for="uploadBtn" class="uploadLabel">
-                            <span for="uploadBtn" class="glyphicon glyphicon-camera"> </span> 
-                            <span id="uploadText">Upload Image</span>
-                        </label>
-                    </div>
+                    <input id="uploadBtn" name="uploadBtn" type="file" class="upload" accept="image/*">
+                    <label for="uploadBtn" class="uploadLabel">
+                        <span for="uploadBtn" class="glyphicon glyphicon-camera"> </span> 
+                        <span id="uploadText">Upload Image</span>
+                    </label>
                 </div>
             </div>
         </div>
@@ -52,6 +52,7 @@
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="assets/javascript/load-image.all.min.js"></script>
     <script type="text/javascript" src="assets/javascript/keys.js"></script>
     <script type="text/javascript" src="assets/javascript/app.js"></script>
     <script type="text/javascript" src="assets/javascript/imgur.js"></script>
