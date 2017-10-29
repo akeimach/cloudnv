@@ -6,6 +6,7 @@ function gotImage(event) {
   var reader = event.target;
   displayPic(reader.result);
   var base64result = reader.result.split(',')[1];
+  queryVisionAPI(base64result);
   var form = new FormData();
   form.append("image", base64result);
 
