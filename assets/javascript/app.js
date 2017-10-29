@@ -26,6 +26,39 @@ function getCloudDescriptor(visionResults) {
 
 
 
+function parseWikiAPI(pageID) {
+    var wikiURL = "https://en.wikipedia.org/w/api.php?" + $.param({
+        "action" : "parse",
+        "pageid" : pageID,
+        "format" : "json",
+        "section": 0, //only parse the summary section
+        "prop"   : "wikitext"
+    });
+
+    $.ajax({
+        url: wikiURL,
+        dataType: "jsonp"
+    }).done(function(result) {
+
+        var title = result.parse.title;
+        var removeDiv = result.parse.wikitext['*'].replace(/<\/?[^>]+(>|$)/g, "");
+        var removeCurly = removeDiv.replace(/{{[^}]+}}/g, "");
+        var removeImage = removeCurly.replace(/\[\[Image[^\]]+\]\]/g, "");
+        var removeBracket = removeImage.replace(/\[\[[\w\s]+\||\]\]|\[\[/g, "");
+        var content = removeBracket.replace(/&nbsp;/g, " ");
+        content = content.replace(/''/g, "\"");
+
+        $("#cloudDesc").attr("hidden", false);
+        $("#cloudDesc").append("<h4>" + title + "</h4>");
+        $("#cloudDesc").append("<p>" + content + "</p>");
+
+    }).fail(function(err) {
+        throw err;
+    });
+}
+
+
+
 function queryWikiAPI(searchString) {
 
     var wikiURL = "https://en.wikipedia.org/w/api.php?" + $.param({
@@ -43,6 +76,7 @@ function queryWikiAPI(searchString) {
         var resultArray = result.query.search;
         console.log("wikipedia query results", resultArray);
         console.log("top wikipedia url: http://en.wikipedia.org/?curid=" + resultArray[0].pageid);
+        parseWikiAPI(resultArray[0].pageid);
     }).fail(function(err) {
         throw err;
     });
