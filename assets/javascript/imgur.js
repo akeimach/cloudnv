@@ -4,7 +4,7 @@
 //Puts image in the DOM on an element with the Id displayImage
 function gotImage(event) {
   var reader = event.target;
-  $("#displayImage").attr("src", reader.result);
+  displayPic(reader.result);
   var base64result = reader.result.split(',')[1];
   var form = new FormData();
   form.append("image", base64result);
@@ -29,6 +29,16 @@ function gotImage(event) {
   });
 }
 
+//Displays picture on the page
+//picture is a valid string for that an image src tag can use
+function displayPic(picture) {
+  $("#displayImage").attr("src", picture);
+  $("#displayImage").removeClass("hidden");
+  $("#drag").removeClass("uploadWanted");
+}
+
+//Make sure that a file is an image and if so sends to the FileReader
+//file is a valid file blob
 function readPic(file) {
   var fileType = file["type"].split("/")[0];
   if (fileType !== "image") {
@@ -54,16 +64,16 @@ $(document).ready(function addUpload() {
   form.append("client_secret", "4e806c50fb260cc521bfe11d4e7edfa22cfbf684");
   form.append("grant_type", "refresh_token");
 
-  $(".dragandrop").on('dragenter', function(e) {
+  $("#drag").on('dragenter', function(e) {
     e.stopPropagation();
     e.preventDefault();
     $(this).css('border', '2px solid #0B85A1');
   });
-  $(".dragandrop").on('dragover', function(e) {
+  $("#drag").on('dragover', function(e) {
     e.stopPropagation();
     e.preventDefault();
   });
-  $(".dragandrop").on('drop', function(e) {
+  $("#drag").on('drop', function(e) {
 
     $(this).css('border', '2px dotted #0B85A1');
     e.preventDefault();
