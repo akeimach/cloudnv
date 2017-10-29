@@ -112,7 +112,7 @@ $("#submit").on("click", function(event) {
     event.preventDefault();
     var imageData = $("#image-url").val().trim();
     if (imageData !== "") {
-        $("#displayImage").attr("src", imageData);
+        displayPic(imageData);
         $("#image-url").val("");
         $("#image-url").attr("placeholder", imageData);
         queryVisionAPI(imageData);
