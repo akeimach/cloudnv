@@ -86,7 +86,6 @@ function parseWikiAPI(pageID) {
 
 function queryWikiAPI(searchWordArray) {
 
-    var resultArray = [];
     var wikiURL = "https://en.wikipedia.org/w/api.php?" + $.param({
         "action" : "query",
         "list"   : "search",
@@ -99,7 +98,7 @@ function queryWikiAPI(searchWordArray) {
         url: wikiURL,
         dataType: "jsonp"
     }).done(function(result) {
-        resultArray = result.query.search;
+        var resultArray = result.query.search;
         console.log("wikipedia query results", resultArray);
         for (var i = 0; i < resultArray.length; i++) {
             if ((resultArray[i].title.search("List")) && (resultArray[i].title.search("Cloud"))) {
@@ -110,7 +109,6 @@ function queryWikiAPI(searchWordArray) {
     }).fail(function(err) {
         throw err;
     });
-
 }
 
 
