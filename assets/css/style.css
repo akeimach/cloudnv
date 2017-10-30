@@ -20,6 +20,19 @@
     background-color: rgba(255,255,255,0.4);
 }
 
+.toggle {
+    text-decoration: none;
+    color: #31708f;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.toggle:hover {
+    text-decoration: none;
+    color: #173848;
+    font-weight: 700;
+}
+
 .panel {
     background-color: #66aede;
     color: white;
