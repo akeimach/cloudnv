@@ -152,6 +152,7 @@ function displayPic(picture) {
   $("#displayImage").attr("src", picture);
   $("#displayImage").removeClass("hidden");
   $("#drag").removeClass("uploadWanted");
+  $("#cloudDesc").empty(); 
 }
 
 function orientDisplayPic(picture, orientation) {
