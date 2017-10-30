@@ -68,6 +68,8 @@ function parseWikiAPI(pageID) {
         "prop"   : "wikitext"
     });
 
+    console.log(wikiURL);
+
     $.ajax({
         url: wikiURL,
         dataType: "jsonp"
@@ -110,6 +112,7 @@ function queryWikiAPI(searchWordArray) {
         "list"   : "search",
         "srsearch" : searchWordArray.join(" "),
         "srwhat" : "text",
+        "prop" : "extracts",
         "format" : "json",
     });
 
