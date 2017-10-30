@@ -2,7 +2,7 @@
 .container-fluid {
     width: 90%;
     height: auto;
-    background: url(../images/lion_king.jpg) no-repeat center fixed;
+    background: url(../images/weather.png) no-repeat center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
