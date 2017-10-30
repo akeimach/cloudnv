@@ -22,6 +22,9 @@ function getCloudDescriptor(visionResults) {
             return cloudWordsArray[i];
         }
     }
+    $("#cloudDesc").attr("hidden", false);
+    $("#cloudDesc").empty();
+    $("#cloudDesc").append("<h4>Couldn't identify cloud</h4>");
 }
 
 
@@ -43,14 +46,19 @@ function parseWikiAPI(pageID) {
         var title = result.parse.title;
         var removeDiv = result.parse.wikitext['*'].replace(/<\/?[^>]+(>|$)/g, "");
         var removeCurly = removeDiv.replace(/{{[^}]+}}/g, "");
-        var removeImage = removeCurly.replace(/\[\[Image[^\]]+\]\]/g, "");
+        var removeImage = removeCurly.replace(/\[\[(Image|File)[^\]]+\]\]/g, "");
         var removeBracket = removeImage.replace(/\[\[[\w\s]+\||\]\]|\[\[/g, "");
         var content = removeBracket.replace(/&nbsp;/g, " ");
         content = content.replace(/''/g, "\"");
 
         $("#cloudDesc").attr("hidden", false);
+        $("#cloudDesc").empty();
         $("#cloudDesc").append("<h4>" + title + "</h4>");
         $("#cloudDesc").append("<p>" + content + "</p>");
+        var linkText = $("<p>");
+        linkText.append("Read more on ");
+        linkText.append("<a href='http://en.wikipedia.org/?curid=" + pageID + "' target='_blank'>Wikipedia</a>");
+        $("#cloudDesc").append(linkText);
 
     }).fail(function(err) {
         throw err;
@@ -64,10 +72,12 @@ function queryWikiAPI(searchString) {
     var wikiURL = "https://en.wikipedia.org/w/api.php?" + $.param({
         "action" : "query",
         "list"   : "search",
-        "srsearch" : searchString + " cloud",
+        "srsearch" : searchString,
         "srwhat" : "text",
         "format" : "json",
     });
+
+    console.log(wikiURL);
 
     $.ajax({
         url: wikiURL,

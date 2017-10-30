@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <link rel="icon" type="image/png" href="assets/images/cloud_icon.png"/>
 </head>
 <body>
     <div class="panel">
@@ -17,25 +18,28 @@
     <div class="container-fluid">
         <div class="row">
             <div class = "col-md-12 customBox">
-                <img id="displayImage" class="imageCloud hidden">
-                <div id="drag" class="drag uploadWanted">
-                    <input id="uploadBtn" name="uploadBtn" type="file" class="upload" accept="image/*" capture>
-                    <label for="uploadBtn" class="uploadLabel">
-                        <span for="uploadBtn" class="glyphicon glyphicon-camera"> </span> 
-                        <span id="uploadText">Upload Image</span>
-                    </label>
+                <div class="row">
+                    <img id="displayImage" class="imageCloud hidden">
+                    <div id="drag" class="drag uploadWanted">
+                        <input id="uploadBtn" name="uploadBtn" type="file" class="upload" accept="image/*" capture>
+                        <label for="uploadBtn" class="uploadLabel">
+                            <span for="uploadBtn" class="glyphicon glyphicon-camera"> </span> 
+                            <span id="uploadText">Upload Image</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-md-offset-4" align="center">
+                        <a data-toggle="collapse" href="#open-url" aria-expanded="false" aria-controls="open-url"><h4>Or enter image URL</h4></a>
+                        <div class="collapse" id="open-url">
+                            <form class="link-form">
+                                <input type="text" name="Image-URL" id="image-url" placeholder="Image URL" value="">
+                                <input type="submit" value="Link Image" id="submit" value="Submit" class="btn linkBtn">
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4"></div>
-            <form class="col-md-4" align="center">
-                <!-- <b>Enter Image URL</b> -->
-                <input type="text" name="Image-URL" id="image-url">
-                <input type="submit" value="Link Image" id="submit" class="btn linkBtn">
-                <br>
-            </form>
-             <div class="col-md-4"></div>
         </div>
         <div class="row">
             <div id=cloudDesc class="col-md-10 col-md-offset-1 customBox" hidden="true">
@@ -43,6 +47,8 @@
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/javascript/load-image.all.min.js"></script>
     <script type="text/javascript" src="assets/javascript/keys.js"></script>
     <script type="text/javascript" src="assets/javascript/app.js"></script>
