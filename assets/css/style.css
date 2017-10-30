@@ -2,7 +2,7 @@
 .container-fluid {
     width: 90%;
     height: auto;
-    background: url(../images/lion_king.jpg) no-repeat center fixed;
+    background: url(../images/weather.png) no-repeat center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -18,6 +18,19 @@
     border-radius: .5rem;
     padding: 1rem;
     background-color: rgba(255,255,255,0.4);
+}
+
+.toggle {
+    text-decoration: none;
+    color: #31708f;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.toggle:hover {
+    text-decoration: none;
+    color: #173848;
+    font-weight: 700;
 }
 
 .panel {
