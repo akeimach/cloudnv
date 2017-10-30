@@ -153,6 +153,17 @@ function displayPic(picture) {
   $("#displayImage").removeClass("hidden");
   $("#drag").removeClass("uploadWanted");
   $("#cloudDesc").empty(); 
+  displayLoad();
+
+}
+
+function displayLoad() {
+  var load = $("<img>");
+  load.addClass("img-center img-responsive");
+  load.attr("src", "assets/images/clouds.gif");
+  load.attr("id", "cloud-gif");
+  $("#cloudDesc").attr("hidden", false);
+  $("#cloudDesc").append(load);
 }
 
 function orientDisplayPic(picture, orientation) {

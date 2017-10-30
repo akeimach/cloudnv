@@ -116,6 +116,19 @@
 
 #cloud-fact {}
 
+#cloudDesc {
+
+}
+
+#cloud-gif {
+
+}
+
+.img-center {
+    display: block;
+    margin: 0 auto;
+}
+
 body {
   min-width: 320px;
 }
