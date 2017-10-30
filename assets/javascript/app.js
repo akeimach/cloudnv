@@ -1,4 +1,5 @@
-var postedResults = 0;
+var countAsync = 0;
+var divMatches = $("<div>");
 
 
 function isURL(imageData) {
@@ -15,13 +16,14 @@ function isURL(imageData) {
 
 
 function getCloudDescriptor(visionResults) {
-    $("#cloudDesc").attr("hidden", false);
-    $("#cloudDesc").empty();
     var searchWordArray = [];
     for (var i = 0; i < visionResults.length; i++) {
         if ((cloudSpeciesArray.indexOf(visionResults[i]) !== -1)) {
             searchWordArray.push(visionResults[i]);
         }
+    }
+    if (searchWordArray.length === 1) {
+        searchWordArray.push("cloud");
     }
     if (searchWordArray.length === 0) {
         // if no specific descriptors were found, check the broad categories
@@ -33,10 +35,26 @@ function getCloudDescriptor(visionResults) {
     }
     if (searchWordArray.length > 0) {
         console.log("chosen words: " + searchWordArray);
-        $("#cloudDesc").append("<h3>Matching Cloud Types</h3>");
         return searchWordArray;
     }
     return searchWordArray;
+}
+
+
+
+function checkAsyncResults() {
+    if (countAsync === 0) {
+        $("#cloudDesc").empty();
+        if (divMatches.children().length === 0) {
+            divMatches.append("<h3>Couldn't identify cloud</h3>");
+            parseWikiAPI(1461163);
+            $("#cloudDesc").append(divMatches);
+        }
+        else {
+            $("#cloudDesc").append("<h3>Matching Cloud Types</h3>");
+            $("#cloudDesc").append(divMatches);
+        }
+    }
 }
 
 
@@ -67,15 +85,16 @@ function parseWikiAPI(pageID) {
 
         if (content.search(/cloud/g) > 0) {
 
-            postedResults++;
-
-            $("#cloudDesc").append("<h4>" + title + "</h4>");
-            $("#cloudDesc").append("<p>" + content + "</p>");
+            divMatches.append("<h4>" + title + "</h4>");
+            divMatches.append("<p>" + content + "</p>");
             var linkText = $("<p>");
             linkText.append("Read more on ");
             linkText.append("<a href='http://en.wikipedia.org/?curid=" + pageID + "' target='_blank'>Wikipedia</a>");
-            $("#cloudDesc").append(linkText);
+            divMatches.append(linkText);
+
         }
+        countAsync--;
+        checkAsyncResults();
 
     }).fail(function(err) {
         throw err;
@@ -100,8 +119,11 @@ function queryWikiAPI(searchWordArray) {
     }).done(function(result) {
         var resultArray = result.query.search;
         console.log("wikipedia query results", resultArray);
+        countAsync = 0;
+        divMatches.empty();
         for (var i = 0; i < resultArray.length; i++) {
             if ((resultArray[i].title.search("List")) && (resultArray[i].title.search("Cloud"))) {
+                countAsync++;
                 parseWikiAPI(resultArray[i].pageid);
             }
         }
@@ -162,14 +184,11 @@ function queryVisionAPI(imageData) {
                 // if the cloud type was found in our cloud word array
                 queryWikiAPI(searchWordArray);
             }
+            else {
+                checkAsyncResults();
+            }
         }
     };
-
-    if (!postedResults) {
-        $("#cloudDesc").attr("hidden", false);
-        $("#cloudDesc").empty();
-        $("#cloudDesc").append("<h4>Couldn't identify cloud</h4>");
-    }
 };
 
 
