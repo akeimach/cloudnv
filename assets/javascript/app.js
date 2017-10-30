@@ -1,3 +1,4 @@
+var postedResults = 0;
 
 
 function isURL(imageData) {
@@ -14,31 +15,28 @@ function isURL(imageData) {
 
 
 function getCloudDescriptor(visionResults) {
-    var searchString = [];
+    $("#cloudDesc").attr("hidden", false);
+    $("#cloudDesc").empty();
+    var searchWordArray = [];
     for (var i = 0; i < visionResults.length; i++) {
-        if ((cloudWordsArray.indexOf(visionResults[i]) !== -1) && (searchString.length < 2)) {
-            searchString.push(visionResults[i]);
+        if ((cloudSpeciesArray.indexOf(visionResults[i]) !== -1)) {
+            searchWordArray.push(visionResults[i]);
         }
     }
-    if (searchString.length === 1) {
-        // add the word 'cloud' if only one specific descriptor found
-        searchString.push("cloud");
-    }
-    if (searchString.length === 0) {
+    if (searchWordArray.length === 0) {
         // if no specific descriptors were found, check the broad categories
         for (var i = 0; i < visionResults.length; i++) {
-            if ((cloudTypesArray.indexOf(visionResults[i]) !== -1) && (searchString.length < 1)) {
-                searchString.push(visionResults[i]);
+            if ((cloudGeneraArray.indexOf(visionResults[i]) !== -1)) {
+                searchWordArray.push(visionResults[i]);
             }
         }
     }
-    if (searchString.length > 0) {
-        console.log("chosen words: " + searchString.join(" "));
-        return searchString.join(" ");
+    if (searchWordArray.length > 0) {
+        console.log("chosen words: " + searchWordArray);
+        $("#cloudDesc").append("<h3>Matching Cloud Types</h3>");
+        return searchWordArray;
     }
-    $("#cloudDesc").attr("hidden", false);
-    $("#cloudDesc").empty();
-    $("#cloudDesc").append("<h4>Couldn't identify cloud</h4>");
+    return searchWordArray;
 }
 
 
@@ -63,17 +61,21 @@ function parseWikiAPI(pageID) {
         var removeImage = removeCurly.replace(/\[\[(Image|File)[^\]]+\]\]/g, "");
         var removeBracket = removeImage.replace(/\[\[[\w\s]+\||\]\]|\[\[/g, "");
         var content = removeBracket.replace(/&nbsp;/g, " ");
-        content = content.replace(/''/g, "\"");
+        content = content.replace(/\'\'/g, "\"");
+        content = content.replace(/\"\'/g, "\"");
         content = content.replace(/__NOTOC__/g, "");
 
-        $("#cloudDesc").attr("hidden", false);
-        $("#cloudDesc").empty();
-        $("#cloudDesc").append("<h4>" + title + "</h4>");
-        $("#cloudDesc").append("<p>" + content + "</p>");
-        var linkText = $("<p>");
-        linkText.append("Read more on ");
-        linkText.append("<a href='http://en.wikipedia.org/?curid=" + pageID + "' target='_blank'>Wikipedia</a>");
-        $("#cloudDesc").append(linkText);
+        if (content.search(/cloud/g) > 0) {
+
+            postedResults++;
+
+            $("#cloudDesc").append("<h4>" + title + "</h4>");
+            $("#cloudDesc").append("<p>" + content + "</p>");
+            var linkText = $("<p>");
+            linkText.append("Read more on ");
+            linkText.append("<a href='http://en.wikipedia.org/?curid=" + pageID + "' target='_blank'>Wikipedia</a>");
+            $("#cloudDesc").append(linkText);
+        }
 
     }).fail(function(err) {
         throw err;
@@ -82,17 +84,15 @@ function parseWikiAPI(pageID) {
 
 
 
-function queryWikiAPI(searchString) {
+function queryWikiAPI(searchWordArray) {
 
     var wikiURL = "https://en.wikipedia.org/w/api.php?" + $.param({
         "action" : "query",
         "list"   : "search",
-        "srsearch" : searchString,
+        "srsearch" : searchWordArray.join(" "),
         "srwhat" : "text",
         "format" : "json",
     });
-
-    console.log(wikiURL);
 
     $.ajax({
         url: wikiURL,
@@ -100,8 +100,12 @@ function queryWikiAPI(searchString) {
     }).done(function(result) {
         var resultArray = result.query.search;
         console.log("wikipedia query results", resultArray);
-        console.log("top wikipedia url: http://en.wikipedia.org/?curid=" + resultArray[0].pageid);
-        parseWikiAPI(resultArray[0].pageid);
+        for (var i = 0; i < resultArray.length; i++) {
+            if ((resultArray[i].title.search("List")) && (resultArray[i].title.search("Cloud"))) {
+                parseWikiAPI(resultArray[i].pageid);
+            }
+        }
+
     }).fail(function(err) {
         throw err;
     });
@@ -136,6 +140,10 @@ function queryVisionAPI(imageData) {
         }
         else {
             var queryResults = result.responses[0].webDetection.webEntities.concat(result.responses[0].labelAnnotations);
+            queryResults.sort(function(a, b) { // Sort the vision api results by score
+                return parseFloat(b.score) - parseFloat(a.score);
+            });
+            console.log(queryResults);
             for (var i = 0; i < queryResults.length; i++) {
                 var resultWord = queryResults[i].description;
                 if (resultWord) {
@@ -149,13 +157,19 @@ function queryVisionAPI(imageData) {
                 }
             }
             console.log(visionResults);
-            var searchString = getCloudDescriptor(visionResults);
-            if (searchString) {
+            var searchWordArray = getCloudDescriptor(visionResults);
+            if (searchWordArray.length > 0) {
                 // if the cloud type was found in our cloud word array
-                queryWikiAPI(searchString);
+                queryWikiAPI(searchWordArray);
             }
         }
     };
+
+    if (!postedResults) {
+        $("#cloudDesc").attr("hidden", false);
+        $("#cloudDesc").empty();
+        $("#cloudDesc").append("<h4>Couldn't identify cloud</h4>");
+    }
 };
 
 
@@ -173,41 +187,35 @@ $("#submit").on("click", function(event) {
 
 
 
-var cloudTypesArray = [
+var cloudGeneraArray = [
+    "nimbostratus",
+    "cumulonimbus",
+    "cirrus",
+    "cirrostratus",
+    "cirrocumulus",
+    "altostratus",
+    "altocumulus",
     "stratus",
     "stratocumulus",
-    "altocumulus",
-    "cirrus",
-    "cirrocumulus",
-    "cirrostratus",
-    "cumulonimbus",
-    "altostratus",
-    "nimbostratus",
     "cumulus"
 ];
 
-var cloudWordsArray = [
-    "humilis",
-    "radiatus",
-    "mediocris",
-    "congestus",
-    "fractus",
-    "nebulosus",
-    "opacus",
-    "translucidus",
-    "undulatus",
-    "stratiformis",
-    "perlucidus",
-    "duplicatus",
-    "lacunosus",
-    "lenticularis",
-    "castellanus",
-    "stratiformus",
-    "floccus",
-    "fibratus",
-    "intortus",
-    "vertebratus",
-    "uncinus",
+var cloudSpeciesArray = [
+    "virga",
+    "tornato",
+    "sundogs",
+    "pyrocumulus",
+    "pileus",
+    "noctilucent",
+    "nacreous",
+    "mammatus",
+    "kelvin–helmholtz",
+    "fallstreak",
+    "distrail",
+    "contrail",
+    "contrails",
+    "arcus",
+    "mushroom",
     "spissatus",
     "calvus",
     "capillatus",
@@ -223,40 +231,46 @@ var cloudWordsArray = [
     "altocumulomutatus",
     "cumuliform",
     "volutus",
+    "undulatus",
+    "translucidus",
+    "radiatus",
+    "lacunosus",
+    "uncinus",
+    "stratiformis",
+    "stratiformus",
+    "stratiform",
+    "mediocris",
+    "lenticularis",
+    "lenticular",
+    "humilis",
+    "fractus",
+    "fibratus",
+    "congestus",
+    "castellanus",
+    "nebulosus",
+    "opacus",
+    "perlucidus",
+    "duplicatus",
+    "floccus",
+    "intortus",
+    "vertebratus",
     "iridescence",
     "circumhorizontal",
-    "arc",
     "mutatus",
-    "mother",
     "genitus",
-    "kelvin–helmholtz",
     "mackerel",
-    "fallstreak",
     "incus",
-    "anvil",
-    "mushroom",
-    "arcus",
-    "mamma",
-    "mammatus",
     "pannus",
-    "pileus",
     "praecipitatio",
     "tuba",
     "velum",
-    "virga",
-    "aircraft",
-    "contrails",
-    "noctilucent",
     "cirriform",
     "columnar",
     "tropospheric",
-    "stratiform",
-    "lenticular",
     "asperitas",
     "stratospheric",
-    "nacreous",
     "polar",
-    "non-nacreous",
+    "non-nacreous"
 ];
 
 
