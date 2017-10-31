@@ -184,10 +184,12 @@ function displayLoad() {
 
 //Display a message to the user, meant to be for errors
 //Empties the cloudDesc element and puts the message there
-function displayError(message) {
-  $("#cloudDesc").attr("hidden", false);
-  $("#cloudDesc").empty();
-  $("#cloudDesc").append("<h3 style='text-align:center;'>" + message + "</h3>");
+function displayError(message, id = "cloudDesc") {
+  $("#" + id).empty();
+  setTimeout(function () {
+    $("#" + id).attr("hidden", false);
+    $("#" + id).append("<h3 style='text-align:center;'>" + message + "</h3>");
+  }, 48); 
 }
 
 //Make sure that a file is an image and if so sends to the FileReader
@@ -317,11 +319,13 @@ $(document).ready(function addUpload() {
         console.log("Upload from another site");
         displayPic(url);
         queryVisionAPI(url);
-      }
+      } else
       if (isBase64image(url)) {
         console.log("Upload from another site");
         displayPic(url);
         queryVisionAPI(url);
+      } else {
+        displayError("Not a valid URL");
       }
     }
   });
