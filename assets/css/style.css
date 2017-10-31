@@ -1,12 +1,6 @@
-
 .container-fluid {
     width: 90%;
     height: auto;
-    background: url(../images/weather.png) no-repeat center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
 }
 
 .row {
@@ -17,7 +11,7 @@
     border: .5rem solid #66aede;
     border-radius: .5rem;
     padding: 1rem;
-    background-color: rgba(255,255,255,0.4);
+    background-color: rgba(255, 255, 255, 0.4);
 }
 
 .infobox-aside {
@@ -56,12 +50,12 @@
     align-items: center;
     padding: 10px;
     font-size: 200%;
-    background-color: rgba(255,255,255,0.4);
+    background-color: rgba(255, 255, 255, 0.4);
     width: 100%;
 }
 
 .drag:hover {
-  background-color: rgba(255,255,255,0.6);
+    background-color: rgba(255, 255, 255, 0.6);
 }
 
 
@@ -69,7 +63,7 @@
     height: 300px;
 }
 
-.dropInfo{
+.dropInfo {
     margin: auto;
     padding: 1rem;
     font-weight: 700;
@@ -87,7 +81,7 @@
 .uploadLabel {
     font-size: 32px;
     font-weight: 700;
-    margin:auto;
+    margin: auto;
     width: 80%;
     height: 80%;
     display: flex;
@@ -122,13 +116,9 @@
 
 #cloud-fact {}
 
-#cloudDesc {
+#cloudDesc {}
 
-}
-
-#cloud-gif {
-
-}
+#cloud-gif {}
 
 .img-center {
     display: block;
@@ -136,5 +126,10 @@
 }
 
 body {
-  min-width: 320px;
+    min-width: 320px;
+    background: url(../images/weather.png) no-repeat center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
