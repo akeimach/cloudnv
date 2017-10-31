@@ -4,7 +4,7 @@
 }
 
 .row {
-    margin-bottom: 2rem;
+    margin: 2rem;
 }
 
 .customBox {
@@ -132,4 +132,9 @@ body {
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+
+}
+
+h3 {
+    margin-left: 2rem;
 }
