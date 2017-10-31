@@ -81,6 +81,7 @@ function parseWikiAPI(pageID, title) {
         for (var i = 0; i < categories.length; i++) {
             var parseCategory = categories[i].title.toLowerCase();
             if (parseCategory.indexOf("cloud") !== -1) {
+                //atmospheric, weather, cloud types
                 cloudCategory = true;
             }
             else {
@@ -90,21 +91,36 @@ function parseWikiAPI(pageID, title) {
                     }
                 }
             }
+            // console.log(title, parseCategory);
         }
 
         if (cloudCategory) {
-            divMatches.append("<br><h4><a href='http://en.wikipedia.org/?curid=" + pageID + "' target='_blank'>" + title + "</a></h4>");
-            divMatches.append("<p>" + result.query.pages[pageID].extract + "</p>");
+            var contentDiv = $("<div>");
+            contentDiv.addClass("row");
+
+            var titleDiv = $("<div>");
+            titleDiv.addClass("col-md-12");
+
+            var extractDiv = $("<div>");
+            contentDiv.addClass("m-2");
+            
+
+            titleDiv.append("<br><h4><a href='http://en.wikipedia.org/?curid=" + pageID + "' target='_blank'>" + title + "</a></h4>");
+            contentDiv.append(titleDiv);
+            extractDiv.append("<p>" + result.query.pages[pageID].extract + "</p>");
+
+            
 
             var infoboxArray = result.query.pages[pageID].revisions[0]["*"].replace(/{{convert[^}]+}}/g, "");
+            infoboxArray = infoboxArray.replace(/\[\[|\]\]/g, "");
             infoboxArray = infoboxArray.match(/{{Infobox[^}]+}}/);
 
             if (infoboxArray) {
                 var infoboxSplit = infoboxArray[0].split("|");
                 var infoDiv = $("<div>");
-                infoDiv.addClass("row");
+                infoDiv.addClass("infobox-aside col-md-4");
                 var infoList = $("<ul>");
-                infoList.addClass("infobox-aside col-md-5 col-md-offset-1");
+                // infoList.addClass("infobox-aside col-md-4");
 
                 infoboxSplit.forEach(function(element) {
                     if (element.indexOf("=") !== -1) {
@@ -119,8 +135,15 @@ function parseWikiAPI(pageID, title) {
                     }
                 });
                 infoDiv.append(infoList);
-                divMatches.append(infoDiv);
+                extractDiv.addClass("col-md-8");
+                contentDiv.append(extractDiv);
+                contentDiv.append(infoDiv);
             }
+            else {
+                extractDiv.addClass("col-md-12");
+                contentDiv.append(extractDiv);
+            }
+            divMatches.append(contentDiv);
         }
 
         countAsync--;
