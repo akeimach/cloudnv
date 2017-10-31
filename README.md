@@ -1,5 +1,7 @@
 # CloudNV
 
+>Emery Cho, Alyssa Keimach, Vu Vuong, Anders Sajbel
+
 ## Purpose
 
 CloudNV acquires an image of a cloud, identify the type of cloud and provide a short description on said cloud.
@@ -25,4 +27,3 @@ After submitting something, it is first verified as an image. If it is over 4MB 
 1. jQuery
 2. Bootstrap
 3. Load-Image https://github.com/blueimp/JavaScript-Load-Image
-

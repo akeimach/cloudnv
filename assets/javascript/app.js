@@ -189,6 +189,7 @@ function queryVisionAPI(imageData) {
             // Check if there was a response
             // TODO: notify user there was a time-out
             console.log(result.responses[0].error);
+            displayError(result.responses[0].error.message);
         }
         else {
             var queryResults = result.responses[0].webDetection.webEntities.concat(result.responses[0].labelAnnotations);
