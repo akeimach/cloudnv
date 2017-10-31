@@ -163,6 +163,7 @@ function displayLoad() {
   load.attr("src", "assets/images/clouds.gif");
   load.attr("id", "cloud-gif");
   $("#cloudDesc").attr("hidden", false);
+  $("#cloudDesc").append("<h3 style='text-align: center;'>Searching for cloud types</h3>");
   $("#cloudDesc").append(load);
 }
 
