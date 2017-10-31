@@ -43,7 +43,7 @@ function getCloudDescriptor(visionResults) {
 
 
 function checkAsyncResults() {
-    if (countAsync === 0) {
+    if (countAsync === 0) { // Each asyncronous call (increment) has been completed (decrement)
         $("#cloudDesc").empty();
         if (divMatches.children().length === 0) {
             divMatches.append("<h3>Couldn't identify cloud</h3>");
@@ -59,42 +59,42 @@ function checkAsyncResults() {
 
 
 
-function parseWikiAPI(pageID) {
-    var wikiURL = "https://en.wikipedia.org/w/api.php?" + $.param({
-        "action" : "parse",
-        "pageid" : pageID,
-        "format" : "json",
-        "section": 0, //only parse the summary section
-        "prop"   : "wikitext"
-    });
+function parseWikiAPI(pageID, title) {
 
-    console.log(wikiURL);
+    var wikiURL = "https://en.wikipedia.org/w/api.php?exintro=&explaintext=&" + $.param({
+        "action" : "query",
+        "format" : "json",
+        "prop"   : "extracts|categories", // Same as parsing wikitext but better! Plain text only! Bye regex!
+        "titles" : title
+    });
 
     $.ajax({
         url: wikiURL,
         dataType: "jsonp"
     }).done(function(result) {
 
-        var title = result.parse.title;
-        var removeDiv = result.parse.wikitext['*'].replace(/<\/?[^>]+(>|$)/g, "");
-        var removeCurly = removeDiv.replace(/{{[^}]+}}/g, "");
-        var removeImage = removeCurly.replace(/\[\[(Image|File)[^\]]+\]\]/g, "");
-        var removeBracket = removeImage.replace(/\[\[[\w\s]+\||\]\]|\[\[/g, "");
-        var content = removeBracket.replace(/&nbsp;/g, " ");
-        content = content.replace(/\'\'/g, "\"");
-        content = content.replace(/\"\'/g, "\"");
-        content = content.replace(/__NOTOC__/g, "");
-
-        if (content.search(/cloud/g) > 0) {
-
-            divMatches.append("<h4>" + title + "</h4>");
-            divMatches.append("<p>" + content + "</p>");
-            var linkText = $("<p>");
-            linkText.append("Read more on ");
-            linkText.append("<a href='http://en.wikipedia.org/?curid=" + pageID + "' target='_blank'>Wikipedia</a>");
-            divMatches.append(linkText);
-
+        var cloudCategory = false;
+        var categories = result.query.pages[pageID].categories;
+        // To check if the article is about clouds, check the category
+        for (var i = 0; i < categories.length; i++) {
+            var parseCategory = categories[i].title.toLowerCase();
+            if (parseCategory.indexOf("cloud") !== -1) {
+                cloudCategory = true;
+            }
+            else {
+                for (var c = 0; c < cloudGeneraArray.length; c++) {
+                    if (parseCategory.indexOf(cloudGeneraArray[c]) !== -1) {
+                        cloudCategory = true;
+                    }
+                }
+            }
         }
+
+        if (cloudCategory) {
+            divMatches.append("<br><h4><a href='http://en.wikipedia.org/?curid=" + pageID + "' target='_blank'>" + title + "</a></h4>");
+            divMatches.append("<p>" + result.query.pages[pageID].extract + "</p>");
+        }
+
         countAsync--;
         checkAsyncResults();
 
@@ -112,9 +112,11 @@ function queryWikiAPI(searchWordArray) {
         "list"   : "search",
         "srsearch" : searchWordArray.join(" "),
         "srwhat" : "text",
-        "prop" : "extracts",
-        "format" : "json",
+        "prop"   : "categories",
+        "format" : "json"
     });
+
+    console.log(wikiURL);
 
     $.ajax({
         url: wikiURL,
@@ -127,7 +129,7 @@ function queryWikiAPI(searchWordArray) {
         for (var i = 0; i < resultArray.length; i++) {
             if ((resultArray[i].title.search("List")) && (resultArray[i].title.search("Cloud"))) {
                 countAsync++;
-                parseWikiAPI(resultArray[i].pageid);
+                parseWikiAPI(resultArray[i].pageid, resultArray[i].title);
             }
         }
 
