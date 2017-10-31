@@ -146,26 +146,8 @@ function resetOrientation(srcBase64, srcOrientation, callback) {
   img.src = srcBase64;
 }
 
-//Displays picture on the page
-//picture is a valid string for that an image src tag can use
-function displayPic(picture) {
-  $("#displayImage").attr("src", picture);
-  $("#displayImage").removeClass("hidden");
-  $("#drag").removeClass("uploadWanted");
-  $("#cloudDesc").empty(); 
-  displayLoad();
-
-}
-
-function displayLoad() {
-  var load = $("<img>");
-  load.addClass("img-center img-responsive");
-  load.attr("src", "assets/images/clouds.gif");
-  load.attr("id", "cloud-gif");
-  $("#cloudDesc").attr("hidden", false);
-  $("#cloudDesc").append(load);
-}
-
+//If the image is not oriented properly uses the resetOrientation function to
+// reorient the image
 function orientDisplayPic(picture, orientation) {
   if (orientation > 1) {
     resetOrientation(picture, orientation, function rotate(rotated) {
@@ -176,13 +158,49 @@ function orientDisplayPic(picture, orientation) {
   }
 }
 
+//Displays picture on the page
+//picture is a valid string for that an image src tag can use
+function displayPic(picture) {
+  $("#displayImage").attr("src", picture);
+  $("#displayImage").removeClass("hidden");
+  $("#drag").removeClass("uploadWanted");
+  displayLoad();
+
+}
+
+
+//Display a message and gif to give the user feed back that the program is doing something
+//Empties the cloudDesc element, puts it there and uses clouds.gif
+function displayLoad() {
+  var load = $("<img>");
+  load.addClass("img-center img-responsive");
+  load.attr("src", "assets/images/clouds.gif");
+  load.attr("id", "cloud-gif");
+  $("#cloudDesc").empty();
+  $("#cloudDesc").attr("hidden", false);
+  $("#cloudDesc").append("<h3 style='text-align: center;'>Searching for cloud types</h3>");
+  $("#cloudDesc").append(load);
+}
+
+//Display a message to the user, meant to be for errors
+//Empties the cloudDesc element and puts the message there
+function displayError(message, id = "cloudDesc") {
+  $("#" + id).empty();
+  setTimeout(function () {
+    $("#" + id).attr("hidden", false);
+    $("#" + id).append("<h3 style='text-align:center;'>" + message + "</h3>");
+  }, 48); 
+}
+
 //Make sure that a file is an image and if so sends to the FileReader
 //file is a valid file blob
 function readPic(file) {
   console.log(file);
   var fileType = file["type"].split("/")[0];
   if (fileType !== "image") {
-    console.log("Not an image")
+    displayError("Not an image, please use a valid image format: \
+      JPEG, PNG8, PNG24, GIF, Animated GIF (first frame only), BMP, WEBP, RAW, or ICO");
+
   } else {
     loadImage.parseMetaData(file, function(data) {
       //default image orientation
@@ -262,6 +280,7 @@ $(document).ready(function addUpload() {
   refreshForm.append("client_secret", "4e806c50fb260cc521bfe11d4e7edfa22cfbf684");
   refreshForm.append("grant_type", "refresh_token");
 
+  //adds drag and drop listeners to the drag element
   $("#drag").on('dragover', function(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -281,10 +300,10 @@ $(document).ready(function addUpload() {
   $("#drag").on('drop', function(event) {
     event.stopPropagation();
     event.preventDefault();
-
     $(this).css('border', '2px dotted #66aede');
     $(this).css('background-color', 'rgba(255,255,255,0.4)');
     $(this).css('color', '#31708f');
+
     var files = event.originalEvent.dataTransfer.files;
     console.log(files.length === 0);
     if (files.length !== 0) {
@@ -300,11 +319,13 @@ $(document).ready(function addUpload() {
         console.log("Upload from another site");
         displayPic(url);
         queryVisionAPI(url);
-      }
+      } else
       if (isBase64image(url)) {
         console.log("Upload from another site");
         displayPic(url);
         queryVisionAPI(url);
+      } else {
+        displayError("Not a valid URL");
       }
     }
   });
