@@ -4,12 +4,12 @@ var divMatches = $("<div>");
 
 function isURL(imageData) {
     var urlPattern = new RegExp("^(https?:\\/\\/)?" + // protocol
-    "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name and extension
-    "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-    "(\\:\\d+)?" + // port
-    "(\\/[-a-z\\d%@_.~+&:]*)*" + // path
-    "(\\?[;&a-z\\d%@_.,~+&:=-]*)?" + // query string
-    "(\\#[-a-z\\d_]*)?$","i"); // fragment locator
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name and extension
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?" + // port
+        "(\\/[-a-z\\d%@_.~+&:]*)*" + // path
+        "(\\?[;&a-z\\d%@_.,~+&:=-]*)?" + // query string
+        "(\\#[-a-z\\d_]*)?$", "i"); // fragment locator
     return urlPattern.test(imageData);
 }
 
@@ -49,8 +49,7 @@ function checkAsyncResults() {
             divMatches.append("<h3>Couldn't identify cloud</h3>");
             parseWikiAPI(1461163);
             $("#cloudDesc").append(divMatches);
-        }
-        else {
+        } else {
             $("#cloudDesc").append("<h3>Matching Cloud Types</h3>");
             $("#cloudDesc").append(divMatches);
         }
@@ -62,12 +61,12 @@ function checkAsyncResults() {
 function parseWikiAPI(pageID, title) {
 
     var wikiURL = "https://en.wikipedia.org/w/api.php?exintro=&explaintext=&" + $.param({
-        "action" : "query",
-        "format" : "json",
-        "prop"   : "extracts|categories|revisions", // Same as parsing wikitext but better! Plain text only! Bye regex!
-        "titles" : title,
-        "rvprop" : "content", // For infobox secion
-        "rvsection" : 0
+        "action": "query",
+        "format": "json",
+        "prop": "extracts|categories|revisions", // Same as parsing wikitext but better! Plain text only! Bye regex!
+        "titles": title,
+        "rvprop": "content", // For infobox secion
+        "rvsection": 0
     });
 
     $.ajax({
@@ -82,8 +81,7 @@ function parseWikiAPI(pageID, title) {
             var parseCategory = categories[i].title.toLowerCase();
             if (parseCategory.indexOf("cloud") !== -1) {
                 cloudCategory = true;
-            }
-            else {
+            } else {
                 for (var c = 0; c < cloudGeneraArray.length; c++) {
                     if (parseCategory.indexOf(cloudGeneraArray[c]) !== -1) {
                         cloudCategory = true;
@@ -136,11 +134,11 @@ function parseWikiAPI(pageID, title) {
 function queryWikiAPI(searchWordArray) {
 
     var wikiURL = "https://en.wikipedia.org/w/api.php?" + $.param({
-        "action" : "query",
-        "list"   : "search",
-        "srsearch" : searchWordArray.join(" "),
-        "srwhat" : "text",
-        "format" : "json"
+        "action": "query",
+        "list": "search",
+        "srsearch": searchWordArray.join(" "),
+        "srwhat": "text",
+        "format": "json"
     });
 
     $.ajax({
@@ -170,14 +168,13 @@ function queryVisionAPI(imageData) {
     var imageDataString;
     if (isURL(imageData)) {
         imageDataString = '"source":{"imageUri":"' + imageData + '"}';
-    }
-    else {
+    } else {
         imageDataString = '"content":"' + imageData + '"';
     }
     var request = '{"requests":[{"image":{' + imageDataString + '},"features":[{"type":"WEB_DETECTION","maxResults":10},{"type":"LABEL_DETECTION","maxResults":10}]}]}';
 
     var response = new XMLHttpRequest;
-    response.open("POST","https://vision.googleapis.com/v1/images:annotate?key=" + apiKey.vision, !0);
+    response.open("POST", "https://vision.googleapis.com/v1/images:annotate?key=" + apiKey.vision, !0);
     response.send(request);
 
     response.onload = function() {
@@ -190,8 +187,7 @@ function queryVisionAPI(imageData) {
             // TODO: notify user there was a time-out
             console.log(result.responses[0].error);
             displayError(result.responses[0].error.message);
-        }
-        else {
+        } else {
             var queryResults = result.responses[0].webDetection.webEntities.concat(result.responses[0].labelAnnotations);
             queryResults.sort(function(a, b) { // Sort the vision api results by score
                 return parseFloat(b.score) - parseFloat(a.score);
@@ -214,8 +210,7 @@ function queryVisionAPI(imageData) {
             if (searchWordArray.length > 0) {
                 // if the cloud type was found in our cloud word array
                 queryWikiAPI(searchWordArray);
-            }
-            else {
+            } else {
                 checkAsyncResults();
             }
         }
@@ -331,5 +326,3 @@ var cloudSpeciesArray = [
     "polar",
     "non-nacreous"
 ];
-
-
