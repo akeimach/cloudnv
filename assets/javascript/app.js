@@ -64,8 +64,10 @@ function parseWikiAPI(pageID, title) {
     var wikiURL = "https://en.wikipedia.org/w/api.php?exintro=&explaintext=&" + $.param({
         "action" : "query",
         "format" : "json",
-        "prop"   : "extracts|categories", // Same as parsing wikitext but better! Plain text only! Bye regex!
-        "titles" : title
+        "prop"   : "extracts|categories|revisions", // Same as parsing wikitext but better! Plain text only! Bye regex!
+        "titles" : title,
+        "rvprop" : "content", // For infobox secion
+        "rvsection" : 0
     });
 
     $.ajax({
@@ -93,6 +95,32 @@ function parseWikiAPI(pageID, title) {
         if (cloudCategory) {
             divMatches.append("<br><h4><a href='http://en.wikipedia.org/?curid=" + pageID + "' target='_blank'>" + title + "</a></h4>");
             divMatches.append("<p>" + result.query.pages[pageID].extract + "</p>");
+
+            var infoboxArray = result.query.pages[pageID].revisions[0]["*"].replace(/{{convert[^}]+}}/g, "");
+            infoboxArray = infoboxArray.match(/{{Infobox[^}]+}}/);
+
+            if (infoboxArray) {
+                var infoboxSplit = infoboxArray[0].split("|");
+                var infoDiv = $("<div>");
+                infoDiv.addClass("row");
+                var infoList = $("<ul>");
+                infoList.addClass("infobox-aside col-md-5 col-md-offset-1");
+
+                infoboxSplit.forEach(function(element) {
+                    if (element.indexOf("=") !== -1) {
+                        var pair = element.split("=");
+                        if ((wikiInfoBox.indexOf(pair[0].trim()) !== -1) && (pair[1].trim() !== "")) {
+                            var quant = pair[1].trim();
+                            quant = quant.replace(/\'\'/g, "\"");
+                            quant = quant.replace(/}}/g, "");
+
+                            infoList.append("<li>" + pair[0].trim() + ": " + quant + "</li>");
+                        }
+                    }
+                });
+                infoDiv.append(infoList);
+                divMatches.append(infoDiv);
+            }
         }
 
         countAsync--;
@@ -207,6 +235,15 @@ $("#submit").on("click", function(event) {
 });
 
 
+var wikiInfoBox = [
+    "name",
+    "abbreviation",
+    "genus",
+    "species",
+    "altitude",
+    "appearance",
+    "precipitation"
+];
 
 var cloudGeneraArray = [
     "nimbostratus",

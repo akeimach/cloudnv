@@ -20,6 +20,12 @@
     background-color: rgba(255,255,255,0.4);
 }
 
+.infobox-aside {
+    border: .3rem solid #66aede;
+    border-radius: .5rem;
+    padding: 1rem;
+}
+
 .toggle {
     text-decoration: none;
     color: #31708f;
