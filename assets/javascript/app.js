@@ -112,26 +112,23 @@ function queryWikiAPI(searchWordArray) {
         "list"   : "search",
         "srsearch" : searchWordArray.join(" "),
         "srwhat" : "text",
-        "prop"   : "categories",
         "format" : "json"
     });
-
-    console.log(wikiURL);
 
     $.ajax({
         url: wikiURL,
         dataType: "jsonp"
     }).done(function(result) {
-        var resultArray = result.query.search;
-        console.log("wikipedia query results", resultArray);
+        console.log("wikipedia query results", result.query.search);
         countAsync = 0;
         divMatches.empty();
-        for (var i = 0; i < resultArray.length; i++) {
-            if ((resultArray[i].title.search("List")) && (resultArray[i].title.search("Cloud"))) {
+        result.query.search.forEach(function(article) {
+            if ((article.title.search("List")) && (article.title.search("Cloud"))) {
                 countAsync++;
-                parseWikiAPI(resultArray[i].pageid, resultArray[i].title);
+                // Need two API calls because can't return categories and extracts for each article in same call - generator max 1
+                parseWikiAPI(article.pageid, article.title);
             }
-        }
+        });
 
     }).fail(function(err) {
         throw err;
