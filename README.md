@@ -1,4 +1,4 @@
-# CloudNV
+# CloudNV - [Homework]
 
 >Emery Cho, Alyssa Keimach, Vu Vuong, Anders Sajbel
 
