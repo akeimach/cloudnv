@@ -43,11 +43,11 @@ function getCloudDescriptor(visionResults) {
 
 
 function checkAsyncResults() {
-    if (countAsync === 0) { // Each asyncronous call (increment) has been completed (decrement)
+    if (countAsync === 0) { // Each asynchronous call (increment) has been completed (decrement)
         $("#cloudDesc").empty();
         if (divMatches.children().length === 0) {
             divMatches.append("<h3>Couldn't identify cloud</h3>");
-            parseWikiAPI(1461163);
+            parseWikiAPI(1461163, "List of cloud types");
             $("#cloudDesc").append(divMatches);
         } else {
             $("#cloudDesc").append("<h3>Matching Cloud Types</h3>");
@@ -119,11 +119,13 @@ function parseWikiAPI(pageID, title) {
                     if (element.indexOf("=") !== -1) {
                         var pair = element.split("=");
                         if ((wikiInfoBox.indexOf(pair[0].trim()) !== -1) && (pair[1].trim() !== "")) {
+                            var key = pair[0].trim();
+                            key = key.charAt(0).toUpperCase() + key.slice(1);
                             var quant = pair[1].trim();
                             quant = quant.replace(/\'\'/g, "\"");
                             quant = quant.replace(/}}/g, "");
 
-                            infoList.append("<li>" + pair[0].trim() + ": " + quant + "</li>");
+                            infoList.append("<li>" + key + ": " + quant + "</li>");
                         }
                     }
                 });
@@ -167,7 +169,7 @@ function queryWikiAPI(searchWordArray) {
         countAsync = 0;
         divMatches.empty();
         result.query.search.forEach(function(article) {
-            if ((article.title.search("List")) && (article.title.search("Cloud"))) {
+            if ((article.title.search("List")) && (article.title.search("Cloud")) && (article.title.indexOf("Media") === -1)) {
                 countAsync++;
                 // Need two API calls because can't return categories and extracts for each article in same call - generator max 1
                 parseWikiAPI(article.pageid, article.title);
