@@ -1,0 +1,140 @@
+.container-fluid {
+    width: 90%;
+    height: auto;
+}
+
+.row {
+    margin: 2rem;
+}
+
+.customBox {
+    border: .5rem solid #66aede;
+    border-radius: .5rem;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.infobox-aside {
+    border: .3rem solid #66aede;
+    border-radius: .5rem;
+    padding: 1rem;
+}
+
+.toggle {
+    text-decoration: none;
+    color: #31708f;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.toggle:hover {
+    text-decoration: none;
+    color: #173848;
+    font-weight: 700;
+}
+
+.panel {
+    background-color: #66aede;
+    color: white;
+    height: 80px;
+    text-align: center;
+}
+
+.drag {
+    margin: auto;
+    border: 2px dotted #66aede;
+    color: #31708f;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    font-size: 200%;
+    background-color: rgba(255, 255, 255, 0.4);
+    width: 100%;
+}
+
+.drag:hover {
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+
+.uploadWanted {
+    height: 300px;
+}
+
+.dropInfo {
+    margin: auto;
+    padding: 1rem;
+    font-weight: 700;
+}
+
+.upload {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.uploadLabel {
+    font-size: 32px;
+    font-weight: 700;
+    margin: auto;
+    width: 80%;
+    height: 80%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload:focus+label,
+.uploadLabel:hover {
+    color: #173848;
+}
+
+.uploadBox {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.imageCloud {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.linkBtn {
+    background-color: rgba(102, 174, 222, 0.6);
+}
+
+.linkBtn:hover {
+    background-color: rgba(102, 174, 222, 0.8);
+}
+
+#cloud-type {}
+
+#cloud-fact {}
+
+#cloudDesc {}
+
+#cloud-gif {}
+
+.img-center {
+    display: block;
+    margin: 0 auto;
+}
+
+body {
+    min-width: 320px;
+    background: url(../images/weather.png) no-repeat center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+}
+
+h3 {
+    margin-left: 2rem;
+}
